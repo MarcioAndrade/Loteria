@@ -4,10 +4,11 @@ using System.Collections.Generic;
 
 namespace Domain
 {
-    public class Sorteio
+    public class Sorteio : ISorteio
     {
         private readonly IConstantes _constantes;
         private readonly int _concurso;
+
 
         public Sorteio(IConstantes constantes, int concurso)
         {
@@ -15,11 +16,9 @@ namespace Domain
             _concurso = concurso;
         }
 
-        public int MyProperty { get; set; }
-
         public IList<int> DezenasSorteadas { get { return ObterDezenasSortedas(); } }
 
-        public IList<int> ObterDezenasSortedas()
+        private IList<int> ObterDezenasSortedas()
         {
             var retorno = new List<int>();
 

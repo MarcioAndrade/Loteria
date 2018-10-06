@@ -1,7 +1,7 @@
 ﻿using Xunit;
 using Domain.MegaSena;
 
-namespace Domain.Teste
+namespace Domain.Teste.MegaSena
 {
     public class TesteJogo
     {

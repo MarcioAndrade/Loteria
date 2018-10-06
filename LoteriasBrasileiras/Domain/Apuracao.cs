@@ -13,11 +13,18 @@ namespace Domain
             _aposta = aposta;
             _constantes = constantes;
             _sorteio = sorteio;
+
+            ObterAcertos();
         }
 
-        public IAposta ObterAcertos()
+        private void ObterAcertos()
         {
-            return null;
+            foreach (var jogo in _aposta.Jogos)
+            {
+                foreach (var dezena in _sorteio.DezenasSorteadas)
+                    if (jogo.Dezenas.Contains(dezena))
+                        jogo.Acertos = jogo.Acertos.GetValueOrDefault() + 1;
+            }
         }
     }
 }

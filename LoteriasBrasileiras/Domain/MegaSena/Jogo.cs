@@ -55,7 +55,23 @@ namespace Domain.MegaSena
             return ValidationResult.IsValid;
         }
 
-        public int? Acertos { get; protected set; }
+        public int? Acertos { get; set; }
+        public string Premiacao
+        {
+            get
+            {
+                if (Acertos.HasValue)
+                {
+                    switch (Acertos.Value)
+                    {
+                        case 4: return "Quadra";
+                        case 5: return "Quina";
+                        case 6: return "Sena";
+                    }
+                }
+                return string.Empty;
+            }
+        }
 
         public IList<int> Dezenas
         {
@@ -89,7 +105,7 @@ namespace Domain.MegaSena
 
                 if (Dezena_15.HasValue)
                     _dezenas.Add(Dezena_15.Value);
-                
+
                 _dezenas.Sort();
 
                 return _dezenas;

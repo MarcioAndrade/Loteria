@@ -2,7 +2,7 @@
 
 namespace Domain.MegaSena
 {
-    public class ConstantesMegaSena : IConstantes
+    public class Constantes : IConstantes
     {
         public int ValorMinimoDezena => 1;
         public int ValorMaximoDezena => 60;
