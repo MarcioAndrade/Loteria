@@ -2,9 +2,9 @@
 
 namespace Domain.LotoFacil
 {
-    public class ResultadoLotoFacilCEF : Entity<ResultadoLotoFacilCEF>
+    public class LotoFacilCEF : Entity<LotoFacilCEF>
     {
-        public ResultadoLotoFacilCEF
+        public LotoFacilCEF
             (
                 int concurso, DateTime dataSorteio, int bola01, int bola02, int bola03,
                 int bola04, int bola05, int bola06, int bola07, int bola08,
@@ -15,6 +15,7 @@ namespace Domain.LotoFacil
                 decimal acumuladoEspecial
             )
         {
+            Id = Guid.NewGuid();
             Concurso = concurso;
             DataSorteio = dataSorteio;
             Bola01 = bola01;

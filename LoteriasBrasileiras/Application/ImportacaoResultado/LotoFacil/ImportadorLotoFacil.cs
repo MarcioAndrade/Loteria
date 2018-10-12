@@ -7,9 +7,9 @@ namespace Application.ImportacaoResultado.LotoFacil
 {
     public class ImportadorLotoFacil
     {
-        public List<ResultadoLotoFacilCEF> ImportarArquivo(int? ultimoConcurso)
+        public List<LotoFacilCEF> ImportarArquivo(int ultimoConcurso)
         {
-            var resultados = new List<ResultadoLotoFacilCEF>();
+            var resultados = new List<LotoFacilCEF>();
             var mensagemLinha = new List<string>();
 
             using (var arquivo = new StreamReader("C:\\Users\\Marcio\\Desktop\\D_LOTFAC.HTM"))
@@ -63,12 +63,12 @@ namespace Application.ImportacaoResultado.LotoFacil
                                 var estimativaPremio = Convert.ToDecimal(mensagemLinha[29]);
                                 var acumuladoEspecial = Convert.ToDecimal(mensagemLinha[30]);
 
-                                var resultadoCef = new ResultadoLotoFacilCEF(
+                                var resultadoCef = new LotoFacilCEF(
                                     concurso, dataSorteio, bola01, bola02, bola03, bola04, bola05, bola06, bola07, bola08, bola09,
                                     bola10, bola11, bola12, bola13, bola14, bola15, arrecadacao, ganhadores15, ganhadores14, ganhadores13, ganhadores12,
                                     ganhadores11, valorRateio15, valorRateio14, valorRateio13, valorRateio12, valorRateio11, acumulado, estimativaPremio, acumuladoEspecial);
 
-                                if (concurso > ultimoConcurso.GetValueOrDefault() && resultadoCef.EhValido())
+                                if (concurso > ultimoConcurso && resultadoCef.EhValido())
                                     resultados.Add(resultadoCef);
                             }
                         }

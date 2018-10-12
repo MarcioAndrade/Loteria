@@ -10,7 +10,7 @@ namespace ApplicationTest.ImportacaoArquivo
         {
             var importaLotoFacil = new ImportadorLotoFacil();
 
-            var arquivo = importaLotoFacil.ImportarArquivo(null);
+            var jogosIportados = importaLotoFacil.ImportarArquivo(0);
         }
     }
 }
