@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repository", "Repository\Re
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IoC", "IoC\IoC.csproj", "{20738B61-4E18-4C38-BA37-A61997EA3579}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Service.Api", "Service.Api\Service.Api.csproj", "{3E4B5B39-10D0-4FAA-8180-24027634FB0D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,6 +55,10 @@ Global
 		{20738B61-4E18-4C38-BA37-A61997EA3579}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{20738B61-4E18-4C38-BA37-A61997EA3579}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{20738B61-4E18-4C38-BA37-A61997EA3579}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E4B5B39-10D0-4FAA-8180-24027634FB0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E4B5B39-10D0-4FAA-8180-24027634FB0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E4B5B39-10D0-4FAA-8180-24027634FB0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E4B5B39-10D0-4FAA-8180-24027634FB0D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -64,6 +70,7 @@ Global
 		{2ABD3E6D-294F-46F3-8043-E23A3CB36EF3} = {8F38B273-6AFF-46A8-BB4B-6002C0D90FC9}
 		{81303B8E-E7DB-462E-A9F2-AE8215A85633} = {9B77E259-801B-4DD1-B492-52DB424EE093}
 		{20738B61-4E18-4C38-BA37-A61997EA3579} = {9B77E259-801B-4DD1-B492-52DB424EE093}
+		{3E4B5B39-10D0-4FAA-8180-24027634FB0D} = {9987B66F-8739-48B2-90A5-273379866802}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B69583B7-A034-4DE0-BDCD-F4273A180FDD}

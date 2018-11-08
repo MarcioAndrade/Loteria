@@ -1,4 +1,6 @@
-﻿using Xunit;
+﻿using Moq;
+using Xunit;
+using Domain.LotoFacil.Repository;
 using Application.ImportacaoResultado.LotoFacil;
 
 namespace ApplicationTest.ImportacaoArquivo
@@ -8,9 +10,13 @@ namespace ApplicationTest.ImportacaoArquivo
         [Fact]
         public void ImportarArquivoTeste()
         {
-            var importaLotoFacil = new ImportadorLotoFacil();
+            var mockLotoFacilRepository = new Mock<ILotoFacilRepository>();
+
+            var importaLotoFacil = new ImportadorLotoFacil(mockLotoFacilRepository.Object);
 
             var jogosIportados = importaLotoFacil.ImportarArquivo(0);
+
+            Assert.Equal(1598, jogosIportados.Count);
         }
     }
 }

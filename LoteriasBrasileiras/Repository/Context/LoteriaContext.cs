@@ -9,6 +9,8 @@ namespace Repository.Context
 {
     public class LoteriaContext : DbContext
     {
+        public LoteriaContext(DbContextOptions opt) : base(opt) { }
+       
         public DbSet<LotoFacilCEF> LotoFacilCEFs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -25,7 +27,7 @@ namespace Repository.Context
                 .AddJsonFile("appsettings.json")
                 .Build();
 
-            optionsBuilder.UseMySql(config.GetConnectionString("DefaultConnection"));
+            //optionsBuilder.UseMySql(config.GetConnectionString("DefaultConnection"));
         }
     }
 }

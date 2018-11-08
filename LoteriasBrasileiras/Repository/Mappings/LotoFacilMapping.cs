@@ -17,6 +17,8 @@ namespace Repository.Mappings
 
             builder.Ignore(e => e.ValidationResult);
 
+            builder.Ignore(e => e.CascadeMode);
+
             builder.Property(e => e.Concurso)
               .IsRequired();
 
