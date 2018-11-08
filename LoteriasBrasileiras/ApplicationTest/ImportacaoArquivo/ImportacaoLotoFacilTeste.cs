@@ -12,7 +12,7 @@ namespace ApplicationTest.ImportacaoArquivo
         {
             var mockLotoFacilRepository = new Mock<ILotoFacilRepository>();
 
-            var importaLotoFacil = new ImportadorLotoFacil(mockLotoFacilRepository.Object);
+            var importaLotoFacil = new ImportadorLotoFacil(null, mockLotoFacilRepository.Object);
 
             var jogosIportados = importaLotoFacil.ImportarArquivo(0);
 

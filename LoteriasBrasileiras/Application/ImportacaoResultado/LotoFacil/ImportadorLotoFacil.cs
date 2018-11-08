@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
+using AutoMapper;
 using System.Linq;
 using Domain.LotoFacil;
+using Application.ViewModel;
 using Application.Interfaces;
 using System.Collections.Generic;
 using Domain.LotoFacil.Repository;
@@ -10,10 +12,12 @@ namespace Application.ImportacaoResultado.LotoFacil
 {
     public class ImportadorLotoFacil : ILotoFacilAppService
     {
+        private readonly IMapper _mapper;
         private readonly ILotoFacilRepository _lotoFacilRepository;
 
-        public ImportadorLotoFacil(ILotoFacilRepository lotoFacilRepository)
+        public ImportadorLotoFacil(IMapper mapper, ILotoFacilRepository lotoFacilRepository)
         {
+            _mapper = mapper;
             _lotoFacilRepository = lotoFacilRepository;
         }
 
@@ -26,7 +30,7 @@ namespace Application.ImportacaoResultado.LotoFacil
             return GravarSorteios(jogos);
         }
 
-        public List<LotoFacilCEF> ImportarArquivo(int ultimoConcurso)
+        public IList<LotoFacilCEF> ImportarArquivo(int ultimoConcurso)
         {
             var resultados = new List<LotoFacilCEF>();
             var sorteio = new List<string>();
@@ -103,15 +107,15 @@ namespace Application.ImportacaoResultado.LotoFacil
             return resultados;
         }
 
-        public List<LotoFacilCEF> ObterTodos()
+        public IList<LotoFacilViewModel> ObterTodos()
         {
-            var resultados = _lotoFacilRepository.ObterTodos().ToList();
+            var resultados = _lotoFacilRepository.ObterTodos().ToList().OrderBy(c => c.Concurso);
 
-            return resultados;
+            return _mapper.Map<IList<LotoFacilViewModel>>(resultados);
 
         }
 
-        public int GravarSorteios(List<LotoFacilCEF> sorteios)
+        public int GravarSorteios(IList<LotoFacilCEF> sorteios)
         {
             _lotoFacilRepository.Adicionar(sorteios);
 

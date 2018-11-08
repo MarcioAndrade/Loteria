@@ -1,5 +1,5 @@
 ﻿using Application.Interfaces;
-using Domain.LotoFacil;
+using Application.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 
@@ -18,7 +18,7 @@ namespace Service.Api.Controllers
 
         // GET: api/LotoFacil
         [HttpGet]
-        public IList<LotoFacilCEF> Get()
+        public IList<LotoFacilViewModel> Get()
         {
             return _appService.ObterTodos();
         }

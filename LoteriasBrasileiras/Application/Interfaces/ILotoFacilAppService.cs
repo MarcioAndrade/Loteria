@@ -1,13 +1,14 @@
 ﻿using Domain.LotoFacil;
+using Application.ViewModel;
 using System.Collections.Generic;
 
 namespace Application.Interfaces
 {
     public interface ILotoFacilAppService
     {
-        List<LotoFacilCEF> ImportarArquivo(int ultimoConcurso);
-        List<LotoFacilCEF> ObterTodos();
-        int GravarSorteios(List<LotoFacilCEF> sorteios);
+        IList<LotoFacilCEF> ImportarArquivo(int ultimoConcurso);
+        IList<LotoFacilViewModel> ObterTodos();
+        int GravarSorteios(IList<LotoFacilCEF> sorteios);
         int Importar();
     }
 }

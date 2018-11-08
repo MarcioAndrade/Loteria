@@ -1,5 +1,6 @@
 ﻿using IoC;
 using System;
+using AutoMapper;
 using Repository.Context;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Builder;
@@ -25,7 +26,7 @@ namespace Service.Api
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            //services.AddAutoMapper();
+            services.AddAutoMapper();
                        
             RegisterServices(services);
 
