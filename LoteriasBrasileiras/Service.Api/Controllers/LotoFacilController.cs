@@ -24,10 +24,10 @@ namespace Service.Api.Controllers
         }
 
         // GET: api/LotoFacil/5
-        [HttpGet("{id}", Name = "Get")]
-        public string Get(int id)
+        [HttpGet("{concurso}", Name = "Get")]
+        public LotoFacilViewModel Get(int concurso)
         {
-            return "value";
+            return _appService.Obter(concurso);
         }
 
         // POST: api/LotoFacil

@@ -12,7 +12,6 @@ namespace Domain.Quina
             int? dezena_06, int? dezena_07, int? dezena_08, int? dezena_09, int? dezena_10,
             int? dezena_11, int? dezena_12, int? dezena_13, int? dezena_14, int? dezena_15)
         {
-            Id = Guid.NewGuid();
             Dezena_01 = dezena_01;
             Dezena_02 = dezena_02;
             Dezena_03 = dezena_03;

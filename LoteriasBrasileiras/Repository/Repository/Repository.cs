@@ -40,7 +40,7 @@ namespace Repository.Repository
             return DbSet.AsNoTracking().Where(predicate);
         }
 
-        public virtual TEntity ObterPorId(Guid id)
+        public virtual TEntity ObterPorId(int id)
         {
             return DbSet.AsNoTracking().FirstOrDefault(t => t.Id == id);
         }
@@ -50,7 +50,7 @@ namespace Repository.Repository
             return DbSet.ToList();
         }
 
-        public virtual void Remover(Guid id)
+        public virtual void Remover(int id)
         {
             DbSet.Remove(DbSet.Find(id));
         }

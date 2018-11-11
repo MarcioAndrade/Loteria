@@ -24,7 +24,7 @@ namespace Application.ImportacaoResultado.LotoFacil
         public int Importar()
         {
             var ultimo = _lotoFacilRepository.ObterUltimo();
-            int ultimoConcurso = ultimo != null ? ultimo.Max(c => c.Concurso) : 0;
+            int ultimoConcurso = ultimo != null ? ultimo.Concurso : 0;
 
             var jogos = ImportarArquivo(ultimoConcurso);
             return GravarSorteios(jogos);
@@ -112,6 +112,14 @@ namespace Application.ImportacaoResultado.LotoFacil
             var resultados = _lotoFacilRepository.ObterTodos().ToList().OrderBy(c => c.Concurso);
 
             return _mapper.Map<IList<LotoFacilViewModel>>(resultados);
+
+        }
+
+        public LotoFacilViewModel Obter(int concurso)
+        {
+            var resultado = _lotoFacilRepository.Obter(concurso);
+
+            return _mapper.Map<LotoFacilViewModel>(resultado);
 
         }
 

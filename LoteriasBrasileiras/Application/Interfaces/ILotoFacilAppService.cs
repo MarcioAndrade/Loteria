@@ -8,6 +8,7 @@ namespace Application.Interfaces
     {
         IList<LotoFacilCEF> ImportarArquivo(int ultimoConcurso);
         IList<LotoFacilViewModel> ObterTodos();
+        LotoFacilViewModel Obter(int concurso);
         int GravarSorteios(IList<LotoFacilCEF> sorteios);
         int Importar();
     }

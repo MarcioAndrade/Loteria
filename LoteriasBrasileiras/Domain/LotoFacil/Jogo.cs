@@ -13,7 +13,6 @@ namespace Domain.LotoFacil
             int dezena_11, int dezena_12, int dezena_13, int dezena_14, int dezena_15,
             int? dezena_16, int? dezena_17, int? dezena_18)
         {
-            Id = Guid.NewGuid();
             Dezena_01 = dezena_01;
             Dezena_02 = dezena_02;
             Dezena_03 = dezena_03;

@@ -14,7 +14,16 @@ namespace Repository.Repository
         {
         }
 
-        public IEnumerable<LotoFacilCEF> ObterUltimo()
+        public override IEnumerable<LotoFacilCEF> ObterTodos()
+        {
+            var sql = @"SELECT * 
+                        FROM loteria.lotofacilcef 
+                       ";
+
+            return Db.Database.GetDbConnection().Query<LotoFacilCEF>(sql);
+        }
+
+        public LotoFacilCEF ObterUltimo()
         {
             var sql = @"SELECT * 
                         FROM loteria.lotofacilcef 
@@ -24,9 +33,13 @@ namespace Repository.Repository
                                 FROM loteria.lotofacilcef
                             )";
 
-            var x = Db.Database.GetDbConnection().QueryFirstOrDefault<object>(sql);
+            return Db.Database.GetDbConnection().QueryFirstOrDefault<LotoFacilCEF>(sql);
 
-            return Db.LotoFacilCEFs.ToList();
+        }
+
+        public LotoFacilCEF Obter(int concurso)
+        {
+            return Db.LotoFacilCEFs.FirstOrDefault(c => c.Concurso == concurso);
         }
     }
 }

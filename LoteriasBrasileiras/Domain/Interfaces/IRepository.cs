@@ -8,10 +8,10 @@ namespace Domain.Interfaces
     {
         void Adicionar(TEntity obj);
         void Adicionar(IEnumerable<TEntity> objs);
-        TEntity ObterPorId(Guid id);
+        TEntity ObterPorId(int id);
         IEnumerable<TEntity> ObterTodos();
         void Atualizar(TEntity obj);
-        void Remover(Guid id);
+        void Remover(int id);
         IEnumerable<TEntity> Buscar(Expression<Func<TEntity, bool>> predicate);
         int SaveChanges();
     }

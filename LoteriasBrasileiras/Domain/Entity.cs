@@ -1,5 +1,4 @@
-﻿using System;
-using FluentValidation;
+﻿using FluentValidation;
 using FluentValidation.Results;
 
 namespace Domain
@@ -11,7 +10,7 @@ namespace Domain
             ValidationResult = new ValidationResult();
         }
 
-        public Guid Id { get; protected set; }
+        public int Id { get; set; }
 
         public abstract bool EhValido();
         public ValidationResult ValidationResult { get; protected set; }
@@ -26,7 +25,7 @@ namespace Domain
             return Id.Equals(compareTo.Id);
         }
 
-        public static bool operator ==(Entity<T> a, Entity<T> b)
+        public static bool operator == (Entity<T> a, Entity<T> b)
         {
             if (ReferenceEquals(a, null) && ReferenceEquals(b, null))
                 return true;

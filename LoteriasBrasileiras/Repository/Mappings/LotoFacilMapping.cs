@@ -11,9 +11,7 @@ namespace Repository.Mappings
         {
             builder.ToTable("LotoFacilCEF");
 
-            builder.Property(e => e.Id)
-               .HasColumnType("varchar(40)")
-               .IsRequired();
+            builder.HasKey(e => e.Id);
 
             builder.Ignore(e => e.ValidationResult);
 
