@@ -57,7 +57,7 @@ namespace Application.ImportacaoResultado.LotoFacil
         {
             var resultados = new List<LotoFacilCEF>();
             var sorteio = new List<string>();
-                        
+
             using (var arquivo = new StreamReader(pathArquivo))
             {
                 string linha;
@@ -77,13 +77,17 @@ namespace Application.ImportacaoResultado.LotoFacil
                                     Replace("</td>", "").
                                     Replace(">", "");
                                 linha = linha.Split("\"")[1];
-                                sorteio.Add(linha);
+
+                                if (linha != "&nbsp1")
+                                    sorteio.Add(linha);
                             }
                         }
 
                         if (sorteio.Any() && sorteio.Count == 31)
                         {
                             var concurso = Convert.ToInt32(sorteio[0]);
+                            if (concurso <= ultimoConcurso)
+                                continue;
                             var dataSorteio = Convert.ToDateTime(sorteio[1]);
                             var bola01 = Convert.ToInt32(sorteio[2]);
                             var bola02 = Convert.ToInt32(sorteio[3]);
@@ -120,7 +124,7 @@ namespace Application.ImportacaoResultado.LotoFacil
                                 bola10, bola11, bola12, bola13, bola14, bola15, arrecadacao, ganhadores15, ganhadores14, ganhadores13, ganhadores12,
                                 ganhadores11, valorRateio15, valorRateio14, valorRateio13, valorRateio12, valorRateio11, acumulado, estimativaPremio, acumuladoEspecial);
 
-                            if (concurso > ultimoConcurso && resultadoCef.EhValido())
+                            if (resultadoCef.EhValido())
                                 resultados.Add(resultadoCef);
                         }
                     }
