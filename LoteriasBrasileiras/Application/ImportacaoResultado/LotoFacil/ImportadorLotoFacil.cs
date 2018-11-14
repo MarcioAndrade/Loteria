@@ -3,6 +3,7 @@ using System.IO;
 using AutoMapper;
 using System.Linq;
 using Domain.LotoFacil;
+using System.IO.Compression;
 using Application.ViewModel;
 using Application.Interfaces;
 using System.Collections.Generic;
@@ -14,6 +15,8 @@ namespace Application.ImportacaoResultado.LotoFacil
     {
         private readonly IMapper _mapper;
         private readonly ILotoFacilRepository _lotoFacilRepository;
+        private readonly string pathArquivoZip = @"E:\Meus documentos\Projetos\Loteria\Resultados\";
+        private readonly string arquivoZip = "D_lotfac.zip";
 
         public ImportadorLotoFacil(IMapper mapper, ILotoFacilRepository lotoFacilRepository)
         {
@@ -26,16 +29,36 @@ namespace Application.ImportacaoResultado.LotoFacil
             var ultimo = _lotoFacilRepository.ObterUltimo();
             int ultimoConcurso = ultimo != null ? ultimo.Concurso : 0;
 
-            var jogos = ImportarArquivo(ultimoConcurso);
+            //BaixarUltimoResultadoCEF();
+
+            var pathArquivo = UnzipArquivo();
+
+            var jogos = ImportarArquivo(pathArquivo, ultimoConcurso);
             return GravarSorteios(jogos);
         }
 
-        public IList<LotoFacilCEF> ImportarArquivo(int ultimoConcurso)
+        private string UnzipArquivo()
+        {
+            ZipFile.ExtractToDirectory(pathArquivoZip + arquivoZip, pathArquivoZip, true);
+
+            var arquivos = Directory.EnumerateFiles(pathArquivoZip, "*.htm", SearchOption.AllDirectories);
+            return arquivos.FirstOrDefault();
+        }
+
+        private void BaixarUltimoResultadoCEF()
+        {
+            var urlArquivo = "http://www1.caixa.gov.br/loterias/_arquivos/loterias/D_lotfac.zip";
+
+            System.Net.WebClient client = new System.Net.WebClient();
+            client.DownloadFile(urlArquivo, pathArquivoZip + arquivoZip);
+        }
+
+        public IList<LotoFacilCEF> ImportarArquivo(string pathArquivo, int ultimoConcurso)
         {
             var resultados = new List<LotoFacilCEF>();
             var sorteio = new List<string>();
-
-            using (var arquivo = new StreamReader("C:\\Users\\Marcio\\Desktop\\D_LOTFAC.HTM"))
+                        
+            using (var arquivo = new StreamReader(pathArquivo))
             {
                 string linha;
 
@@ -47,7 +70,7 @@ namespace Application.ImportacaoResultado.LotoFacil
                         sorteio = new List<string>();
                         while ((linha = arquivo.ReadLine()) != null && linha != "</tr>" && !linha.StartsWith("<th"))
                         {
-                            if (linha.StartsWith("<td ") /*&& !linha.Contains("&nbsp1")*/)
+                            if (linha.StartsWith("<td "))
                             {
                                 linha = linha.
                                     Replace("<td rowspan=\"", "").

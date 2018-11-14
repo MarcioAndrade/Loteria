@@ -6,7 +6,7 @@ namespace Application.Interfaces
 {
     public interface ILotoFacilAppService
     {
-        IList<LotoFacilCEF> ImportarArquivo(int ultimoConcurso);
+        IList<LotoFacilCEF> ImportarArquivo(string pathArquivo, int ultimoConcurso);
         IList<LotoFacilViewModel> ObterTodos();
         LotoFacilViewModel Obter(int concurso);
         int GravarSorteios(IList<LotoFacilCEF> sorteios);
