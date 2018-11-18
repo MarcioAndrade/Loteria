@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Domain.MegaSena;
 using Domain.LotoFacil;
 using Application.ViewModel;
 
@@ -9,6 +10,7 @@ namespace Application.AutoMapper
         public DomainToViewModelMappingProfile()
         {
             CreateMap<LotoFacilCEF, LotoFacilViewModel>();
+            CreateMap<MegaSenaCEF, MegaSenaViewModel>();
         }
     }
 }

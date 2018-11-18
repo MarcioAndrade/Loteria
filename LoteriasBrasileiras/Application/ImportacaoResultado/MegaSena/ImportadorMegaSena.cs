@@ -1,35 +1,35 @@
 ﻿using System;
 using System.IO;
-using AutoMapper;
 using System.Net;
+using AutoMapper;
 using System.Linq;
-using Domain.LotoFacil;
+using Domain.MegaSena;
 using System.IO.Compression;
 using Application.ViewModel;
 using Application.Interfaces;
+using Domain.MegaSena.Repository;
 using System.Collections.Generic;
-using Domain.LotoFacil.Repository;
 
-namespace Application.ImportacaoResultado.LotoFacil
+namespace Application.ImportacaoResultado.MegaSena
 {
-    public class ImportadorLotoFacil : ILotoFacilAppService
+    public class ImportadorMegaSena : IMegaSenaAppService
     {
         private readonly IMapper _mapper;
-        private readonly ILotoFacilRepository _lotoFacilRepository;
+        private readonly IMegaSenaRepository _megaSenaRepository;
         private readonly string pathArquivoZip = @"E:\Meus documentos\Projetos\Loteria\Resultados\";
-        private readonly string arquivoZip = @"D_lotfac.zip";
-        private readonly string extensaoArquivoHtm = @"D_LOTFAC.htm";
+        private readonly string arquivoZip = @"D_megase.zip";
+        private readonly string extensaoArquivoHtm = @"D_MEGA.htm";
         private readonly string urlDownload = @"http://www1.caixa.gov.br/loterias/_arquivos/loterias/";
 
-        public ImportadorLotoFacil(IMapper mapper, ILotoFacilRepository lotoFacilRepository)
+        public ImportadorMegaSena(IMapper mapper, IMegaSenaRepository megaSenaRepository)
         {
             _mapper = mapper;
-            _lotoFacilRepository = lotoFacilRepository;
+            _megaSenaRepository = megaSenaRepository;
         }
 
         public string Importar()
         {
-            var ultimo = _lotoFacilRepository.ObterUltimo();
+            var ultimo = _megaSenaRepository.ObterUltimo();
             int ultimoConcurso = ultimo != null ? ultimo.Concurso : 0;
 
             BaixarUltimoResultadoCEF();
@@ -48,7 +48,7 @@ namespace Application.ImportacaoResultado.LotoFacil
 
             return string.Format("{0} jogos foram importados.", importados);
         }
-
+        //TODO: fazer como serviço
         private string UnzipArquivo()
         {
             try
@@ -63,7 +63,7 @@ namespace Application.ImportacaoResultado.LotoFacil
                 throw;
             }
         }
-
+        //TODO: fazer como serviço
         private void BaixarUltimoResultadoCEF()
         {
             try
@@ -88,9 +88,9 @@ namespace Application.ImportacaoResultado.LotoFacil
             }
         }
 
-        public IList<LotoFacilCEF> ImportarArquivo(string pathArquivo, int ultimoConcurso)
+        public IList<MegaSenaCEF> ImportarArquivo(string pathArquivo, int ultimoConcurso)
         {
-            var resultados = new List<LotoFacilCEF>();
+            var resultados = new List<MegaSenaCEF>();
             var sorteio = new List<string>();
 
             using (var arquivo = new StreamReader(pathArquivo))
@@ -118,46 +118,33 @@ namespace Application.ImportacaoResultado.LotoFacil
                             }
                         }
 
-                        if (sorteio.Any() && sorteio.Count == 31)
+                        if (sorteio.Any() && sorteio.Count == 19)
                         {
                             var concurso = Convert.ToInt32(sorteio[0]);
                             if (concurso <= ultimoConcurso)
                                 continue;
                             var dataSorteio = Convert.ToDateTime(sorteio[1]);
-                            var bola01 = Convert.ToInt32(sorteio[2]);
-                            var bola02 = Convert.ToInt32(sorteio[3]);
-                            var bola03 = Convert.ToInt32(sorteio[4]);
-                            var bola04 = Convert.ToInt32(sorteio[5]);
-                            var bola05 = Convert.ToInt32(sorteio[6]);
-                            var bola06 = Convert.ToInt32(sorteio[7]);
-                            var bola07 = Convert.ToInt32(sorteio[8]);
-                            var bola08 = Convert.ToInt32(sorteio[9]);
-                            var bola09 = Convert.ToInt32(sorteio[10]);
-                            var bola10 = Convert.ToInt32(sorteio[11]);
-                            var bola11 = Convert.ToInt32(sorteio[12]);
-                            var bola12 = Convert.ToInt32(sorteio[13]);
-                            var bola13 = Convert.ToInt32(sorteio[14]);
-                            var bola14 = Convert.ToInt32(sorteio[15]);
-                            var bola15 = Convert.ToInt32(sorteio[16]);
-                            var arrecadacao = Convert.ToDecimal(sorteio[17]);
-                            var ganhadores15 = Convert.ToInt32(sorteio[18]);
-                            var ganhadores14 = Convert.ToInt32(sorteio[19]);
-                            var ganhadores13 = Convert.ToInt32(sorteio[20]);
-                            var ganhadores12 = Convert.ToInt32(sorteio[21]);
-                            var ganhadores11 = Convert.ToInt32(sorteio[22]);
-                            var valorRateio15 = Convert.ToDecimal(sorteio[23]);
-                            var valorRateio14 = Convert.ToDecimal(sorteio[24]);
-                            var valorRateio13 = Convert.ToDecimal(sorteio[25]);
-                            var valorRateio12 = Convert.ToDecimal(sorteio[26]);
-                            var valorRateio11 = Convert.ToDecimal(sorteio[27]);
-                            var acumulado = Convert.ToDecimal(sorteio[28]);
-                            var estimativaPremio = Convert.ToDecimal(sorteio[29]);
-                            var acumuladoEspecial = Convert.ToDecimal(sorteio[30]);
+                            var primeiraDezena = Convert.ToInt32(sorteio[2]);
+                            var segundaDezena = Convert.ToInt32(sorteio[3]);
+                            var terceiraDezena = Convert.ToInt32(sorteio[4]);
+                            var quartaDezena = Convert.ToInt32(sorteio[5]);
+                            var quintaDezena = Convert.ToInt32(sorteio[6]);
+                            var sextaDezena = Convert.ToInt32(sorteio[7]);
+                            var arrecadacao = Convert.ToDecimal(sorteio[8]);
+                            var ganhadoresSena = Convert.ToInt32(sorteio[9]);
+                            var rateioSena = Convert.ToDecimal(sorteio[10]);
+                            var ganhadoresQuina = Convert.ToInt32(sorteio[11]);
+                            var rateioQuina = Convert.ToDecimal(sorteio[12]);
+                            var ganhadoresQuadra = Convert.ToInt32(sorteio[13]);
+                            var rateioQuadra = Convert.ToDecimal(sorteio[14]);
+                            var acumulado = sorteio[15].Equals("SIM") ? "SIM" : "NAO";
+                            var valorAcumulado = Convert.ToDecimal(sorteio[16]);
+                            var estimativaPremio = Convert.ToDecimal(sorteio[17]);
+                            var acumuladoMegaDaVirada = Convert.ToDecimal(sorteio[18]);
 
-                            var resultadoCef = new LotoFacilCEF(
-                                concurso, dataSorteio, bola01, bola02, bola03, bola04, bola05, bola06, bola07, bola08, bola09,
-                                bola10, bola11, bola12, bola13, bola14, bola15, arrecadacao, ganhadores15, ganhadores14, ganhadores13, ganhadores12,
-                                ganhadores11, valorRateio15, valorRateio14, valorRateio13, valorRateio12, valorRateio11, acumulado, estimativaPremio, acumuladoEspecial);
+                            var resultadoCef = new MegaSenaCEF(
+                                concurso, dataSorteio, primeiraDezena, segundaDezena, terceiraDezena, quartaDezena, quintaDezena, sextaDezena, arrecadacao, ganhadoresSena,
+                                rateioSena, ganhadoresQuina, rateioQuina, ganhadoresQuadra, rateioQuadra, acumulado, valorAcumulado, estimativaPremio, acumuladoMegaDaVirada);
 
                             if (resultadoCef.EhValido())
                                 resultados.Add(resultadoCef);
@@ -169,27 +156,25 @@ namespace Application.ImportacaoResultado.LotoFacil
             return resultados;
         }
 
-        public IList<LotoFacilViewModel> ObterTodos()
+        public MegaSenaViewModel Obter(int concurso)
         {
-            var resultados = _lotoFacilRepository.ObterTodos().ToList().OrderBy(c => c.Concurso);
+            var resultado = _megaSenaRepository.Obter(concurso);
 
-            return _mapper.Map<IList<LotoFacilViewModel>>(resultados);
-
+            return _mapper.Map<MegaSenaViewModel>(resultado);
         }
 
-        public LotoFacilViewModel Obter(int concurso)
+        public int GravarSorteios(IList<MegaSenaCEF> sorteios)
         {
-            var resultado = _lotoFacilRepository.Obter(concurso);
+            _megaSenaRepository.Adicionar(sorteios);
 
-            return _mapper.Map<LotoFacilViewModel>(resultado);
-
+            return _megaSenaRepository.SaveChanges();
         }
 
-        public int GravarSorteios(IList<LotoFacilCEF> sorteios)
+        public IList<MegaSenaViewModel> ObterTodos()
         {
-            _lotoFacilRepository.Adicionar(sorteios);
+            var resultados = _megaSenaRepository.ObterTodos().ToList().OrderBy(c => c.Concurso);
 
-            return _lotoFacilRepository.SaveChanges();
+            return _mapper.Map<IList<MegaSenaViewModel>>(resultados);
         }
     }
 }

@@ -5,40 +5,39 @@ using System.Collections.Generic;
 
 namespace Service.Api.Controllers
 {
-    [Route("api/lotoFacil")]
+    [Route("api/megaSena")]
     [ApiController]
-    public class LotoFacilController : ControllerBase
+    public class MegaSenaController : ControllerBase
     {
-        private readonly ILotoFacilAppService _appService;
+        private readonly IMegaSenaAppService _appService;
 
-        public LotoFacilController(ILotoFacilAppService appService)
+        public MegaSenaController(IMegaSenaAppService appService)
         {
             _appService = appService;
         }
 
-        // GET: api/LotoFacil
+        // GET: api/MegaSena
         [HttpGet]
-        public IList<LotoFacilViewModel> Get()
+        public IEnumerable<MegaSenaViewModel> Get()
         {
             return _appService.ObterTodos();
         }
 
-        // GET: api/LotoFacil/5
-        [HttpGet("{concurso}", Name = "Get")]
-        public LotoFacilViewModel Get(int concurso)
+        // GET: api/MegaSena/5
+        [HttpGet("{idConcurso}", Name = "Obter")]
+        public MegaSenaViewModel Obter(int idConcurso)
         {
-            return _appService.Obter(concurso);
+            return _appService.Obter(idConcurso);
         }
 
-        // POST: api/LotoFacil
+        // POST: api/MegaSena
         [HttpPost]
         public string Post()
         {
             return _appService.Importar();
         }
 
-
-        // PUT: api/LotoFacil/5
+        // PUT: api/MegaSena/5
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] string value)
         {
