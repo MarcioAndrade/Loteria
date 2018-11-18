@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using AutoMapper;
 using System.Linq;
 using Domain.LotoFacil;
@@ -35,9 +34,11 @@ namespace Application.ImportacaoResultado.LotoFacil
 
             var pathArquivo = ArquivoHelper.UnzipArquivo(pathArquivoZip, arquivoZip, extensaoArquivoHtm);
 
-            var jogos = ImportarArquivo(pathArquivo, ultimoConcurso);
+            var informacoesArquivo = ArquivoHelper.ExtrairInformacoesArquivo(pathArquivo, 31);
 
-            var importados = GravarSorteios(jogos);
+            var sorteios = MontarSorteios(informacoesArquivo, ultimoConcurso);
+
+            var importados = GravarSorteios(sorteios.Validos);
 
             if (importados == 0)
                 return @"Nenhum jogo foi importado pois a base de dados já estava atualizada.";
@@ -48,85 +49,61 @@ namespace Application.ImportacaoResultado.LotoFacil
             return string.Format("{0} jogos foram importados.", importados);
         }
 
-        public IList<LotoFacilCEF> ImportarArquivo(string pathArquivo, int ultimoConcurso)
+        public Importacao MontarSorteios(List<List<string>> componentes, int? ultimoConcurso = 0)
         {
-            var resultados = new List<LotoFacilCEF>();
-            var sorteio = new List<string>();
+            var importacao = new Importacao();
 
-            using (var arquivo = new StreamReader(pathArquivo))
+            foreach (var item in componentes)
             {
-                string linha;
-
-                while ((linha = arquivo.ReadLine()) != null)
+                if (item.Any() && item.Count == 31)
                 {
-                    if (linha.StartsWith("<tr"))
-                    {
-                        linha = arquivo.ReadLine();
-                        sorteio = new List<string>();
-                        while ((linha = arquivo.ReadLine()) != null && linha != "</tr>" && !linha.StartsWith("<th"))
-                        {
-                            if (linha.StartsWith("<td "))
-                            {
-                                linha = linha.
-                                    Replace("<td rowspan=\"", "").
-                                    Replace("</td>", "").
-                                    Replace(">", "");
-                                linha = linha.Split("\"")[1];
+                    var concurso = Convert.ToInt32(item[0]);
+                    if (concurso <= ultimoConcurso)
+                        continue;
+                    var dataSorteio = Convert.ToDateTime(item[1]);
+                    var bola01 = Convert.ToInt32(item[2]);
+                    var bola02 = Convert.ToInt32(item[3]);
+                    var bola03 = Convert.ToInt32(item[4]);
+                    var bola04 = Convert.ToInt32(item[5]);
+                    var bola05 = Convert.ToInt32(item[6]);
+                    var bola06 = Convert.ToInt32(item[7]);
+                    var bola07 = Convert.ToInt32(item[8]);
+                    var bola08 = Convert.ToInt32(item[9]);
+                    var bola09 = Convert.ToInt32(item[10]);
+                    var bola10 = Convert.ToInt32(item[11]);
+                    var bola11 = Convert.ToInt32(item[12]);
+                    var bola12 = Convert.ToInt32(item[13]);
+                    var bola13 = Convert.ToInt32(item[14]);
+                    var bola14 = Convert.ToInt32(item[15]);
+                    var bola15 = Convert.ToInt32(item[16]);
+                    var arrecadacao = Convert.ToDecimal(item[17]);
+                    var ganhadores15 = Convert.ToInt32(item[18]);
+                    var ganhadores14 = Convert.ToInt32(item[19]);
+                    var ganhadores13 = Convert.ToInt32(item[20]);
+                    var ganhadores12 = Convert.ToInt32(item[21]);
+                    var ganhadores11 = Convert.ToInt32(item[22]);
+                    var valorRateio15 = Convert.ToDecimal(item[23]);
+                    var valorRateio14 = Convert.ToDecimal(item[24]);
+                    var valorRateio13 = Convert.ToDecimal(item[25]);
+                    var valorRateio12 = Convert.ToDecimal(item[26]);
+                    var valorRateio11 = Convert.ToDecimal(item[27]);
+                    var acumulado = Convert.ToDecimal(item[28]);
+                    var estimativaPremio = Convert.ToDecimal(item[29]);
+                    var acumuladoEspecial = Convert.ToDecimal(item[30]);
 
-                                if (linha != "&nbsp1")
-                                    sorteio.Add(linha);
-                            }
-                        }
+                    var resultadoCef = new LotoFacilCEF(
+                        concurso, dataSorteio, bola01, bola02, bola03, bola04, bola05, bola06, bola07, bola08, bola09,
+                        bola10, bola11, bola12, bola13, bola14, bola15, arrecadacao, ganhadores15, ganhadores14, ganhadores13, ganhadores12,
+                        ganhadores11, valorRateio15, valorRateio14, valorRateio13, valorRateio12, valorRateio11, acumulado, estimativaPremio, acumuladoEspecial);
 
-                        if (sorteio.Any() && sorteio.Count == 31)
-                        {
-                            var concurso = Convert.ToInt32(sorteio[0]);
-                            if (concurso <= ultimoConcurso)
-                                continue;
-                            var dataSorteio = Convert.ToDateTime(sorteio[1]);
-                            var bola01 = Convert.ToInt32(sorteio[2]);
-                            var bola02 = Convert.ToInt32(sorteio[3]);
-                            var bola03 = Convert.ToInt32(sorteio[4]);
-                            var bola04 = Convert.ToInt32(sorteio[5]);
-                            var bola05 = Convert.ToInt32(sorteio[6]);
-                            var bola06 = Convert.ToInt32(sorteio[7]);
-                            var bola07 = Convert.ToInt32(sorteio[8]);
-                            var bola08 = Convert.ToInt32(sorteio[9]);
-                            var bola09 = Convert.ToInt32(sorteio[10]);
-                            var bola10 = Convert.ToInt32(sorteio[11]);
-                            var bola11 = Convert.ToInt32(sorteio[12]);
-                            var bola12 = Convert.ToInt32(sorteio[13]);
-                            var bola13 = Convert.ToInt32(sorteio[14]);
-                            var bola14 = Convert.ToInt32(sorteio[15]);
-                            var bola15 = Convert.ToInt32(sorteio[16]);
-                            var arrecadacao = Convert.ToDecimal(sorteio[17]);
-                            var ganhadores15 = Convert.ToInt32(sorteio[18]);
-                            var ganhadores14 = Convert.ToInt32(sorteio[19]);
-                            var ganhadores13 = Convert.ToInt32(sorteio[20]);
-                            var ganhadores12 = Convert.ToInt32(sorteio[21]);
-                            var ganhadores11 = Convert.ToInt32(sorteio[22]);
-                            var valorRateio15 = Convert.ToDecimal(sorteio[23]);
-                            var valorRateio14 = Convert.ToDecimal(sorteio[24]);
-                            var valorRateio13 = Convert.ToDecimal(sorteio[25]);
-                            var valorRateio12 = Convert.ToDecimal(sorteio[26]);
-                            var valorRateio11 = Convert.ToDecimal(sorteio[27]);
-                            var acumulado = Convert.ToDecimal(sorteio[28]);
-                            var estimativaPremio = Convert.ToDecimal(sorteio[29]);
-                            var acumuladoEspecial = Convert.ToDecimal(sorteio[30]);
-
-                            var resultadoCef = new LotoFacilCEF(
-                                concurso, dataSorteio, bola01, bola02, bola03, bola04, bola05, bola06, bola07, bola08, bola09,
-                                bola10, bola11, bola12, bola13, bola14, bola15, arrecadacao, ganhadores15, ganhadores14, ganhadores13, ganhadores12,
-                                ganhadores11, valorRateio15, valorRateio14, valorRateio13, valorRateio12, valorRateio11, acumulado, estimativaPremio, acumuladoEspecial);
-
-                            if (resultadoCef.EhValido())
-                                resultados.Add(resultadoCef);
-                        }
-                    }
+                    if (resultadoCef.EhValido())
+                        importacao.Validos.Add(resultadoCef);
+                    else
+                        importacao.Rejeitados.Add(resultadoCef);
                 }
             }
 
-            return resultados;
+            return importacao;
         }
 
         public IList<LotoFacilViewModel> ObterTodos()

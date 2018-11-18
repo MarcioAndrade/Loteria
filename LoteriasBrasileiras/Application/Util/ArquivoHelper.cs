@@ -3,6 +3,7 @@ using System.IO;
 using System.Net;
 using System.Linq;
 using System.IO.Compression;
+using System.Collections.Generic;
 
 namespace Application.Util
 {
@@ -45,6 +46,44 @@ namespace Application.Util
             {
                 throw;
             }
+        }
+
+        public static List<List<string>> ExtrairInformacoesArquivo(string pathArquivo, int informacoesPorLinha)
+        {
+            var informacoes = new List<List<string>>();
+            var sorteio = new List<string>();
+
+            using (var arquivo = new StreamReader(pathArquivo))
+            {
+                string linha;
+
+                while ((linha = arquivo.ReadLine()) != null)
+                {
+                    if (linha.StartsWith("<tr"))
+                    {
+                        linha = arquivo.ReadLine();
+                        sorteio = new List<string>();
+                        while ((linha = arquivo.ReadLine()) != null && linha != "</tr>" && !linha.StartsWith("<th"))
+                        {
+                            if (linha.StartsWith("<td "))
+                            {
+                                linha = linha.
+                                    Replace("<td rowspan=\"", "").
+                                    Replace("</td>", "").
+                                    Replace(">", "");
+                                linha = linha.Split("\"")[1];
+
+                                if (linha != "&nbsp1")
+                                    sorteio.Add(linha);
+                            }
+                        }
+
+                        if (sorteio.Any() && sorteio.Count == informacoesPorLinha)
+                            informacoes.Add(sorteio);
+                    }
+                }
+            }
+            return informacoes;
         }
     }
 }

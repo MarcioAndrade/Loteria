@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using AutoMapper;
 using System.Linq;
 using Domain.MegaSena;
@@ -30,14 +29,16 @@ namespace Application.ImportacaoResultado.MegaSena
         {
             var ultimo = _megaSenaRepository.ObterUltimo();
             int ultimoConcurso = ultimo != null ? ultimo.Concurso : 0;
-                        
+
             ArquivoHelper.BaixarUltimoResultadoCEF(urlDownload, arquivoZip, pathArquivoZip);
-                        
+
             var pathArquivo = ArquivoHelper.UnzipArquivo(pathArquivoZip, arquivoZip, extensaoArquivoHtm);
 
-            var jogos = ImportarArquivo(pathArquivo, ultimoConcurso);
+            var informacoesArquivo = ArquivoHelper.ExtrairInformacoesArquivo(pathArquivo, 19);
 
-            var importados = GravarSorteios(jogos);
+            var sorteios = MontarSorteios(informacoesArquivo, ultimoConcurso);
+
+            var importados = GravarSorteios(sorteios.Validos);
 
             if (importados == 0)
                 return @"Nenhum jogo foi importado pois a base de dados já estava atualizada.";
@@ -48,72 +49,49 @@ namespace Application.ImportacaoResultado.MegaSena
             return string.Format("{0} jogos foram importados.", importados);
         }
 
-        public IList<MegaSenaCEF> ImportarArquivo(string pathArquivo, int ultimoConcurso)
+        public Importacao MontarSorteios(List<List<string>> componentes, int? ultimoConcurso = 0)
         {
-            var resultados = new List<MegaSenaCEF>();
-            var sorteio = new List<string>();
+            var importacao = new Importacao();
 
-            using (var arquivo = new StreamReader(pathArquivo))
+            foreach (var item in componentes)
             {
-                string linha;
-
-                while ((linha = arquivo.ReadLine()) != null)
+                if (item.Any() && item.Count == 19)
                 {
-                    if (linha.StartsWith("<tr"))
-                    {
-                        linha = arquivo.ReadLine();
-                        sorteio = new List<string>();
-                        while ((linha = arquivo.ReadLine()) != null && linha != "</tr>" && !linha.StartsWith("<th"))
-                        {
-                            if (linha.StartsWith("<td "))
-                            {
-                                linha = linha.
-                                    Replace("<td rowspan=\"", "").
-                                    Replace("</td>", "").
-                                    Replace(">", "");
-                                linha = linha.Split("\"")[1];
+                    var concurso = Convert.ToInt32(item[0]);
+                    if (concurso <= ultimoConcurso)
+                        continue;
+                    var dataSorteio = Convert.ToDateTime(item[1]);
+                    var primeiraDezena = Convert.ToInt32(item[2]);
+                    var segundaDezena = Convert.ToInt32(item[3]);
+                    var terceiraDezena = Convert.ToInt32(item[4]);
+                    var quartaDezena = Convert.ToInt32(item[5]);
+                    var quintaDezena = Convert.ToInt32(item[6]);
+                    var sextaDezena = Convert.ToInt32(item[7]);
+                    var arrecadacao = Convert.ToDecimal(item[8]);
+                    var ganhadoresSena = Convert.ToInt32(item[9]);
+                    var rateioSena = Convert.ToDecimal(item[10]);
+                    var ganhadoresQuina = Convert.ToInt32(item[11]);
+                    var rateioQuina = Convert.ToDecimal(item[12]);
+                    var ganhadoresQuadra = Convert.ToInt32(item[13]);
+                    var rateioQuadra = Convert.ToDecimal(item[14]);
+                    var acumulado = item[15].Equals("SIM") ? "SIM" : "NAO";
+                    var valorAcumulado = Convert.ToDecimal(item[16]);
+                    var estimativaPremio = Convert.ToDecimal(item[17]);
+                    var acumuladoMegaDaVirada = Convert.ToDecimal(item[18]);
 
-                                if (linha != "&nbsp1")
-                                    sorteio.Add(linha);
-                            }
-                        }
+                    var resultadoCef = new MegaSenaCEF(
+                        concurso, dataSorteio, primeiraDezena, segundaDezena, terceiraDezena, quartaDezena, quintaDezena, sextaDezena, arrecadacao, ganhadoresSena,
+                        rateioSena, ganhadoresQuina, rateioQuina, ganhadoresQuadra, rateioQuadra, acumulado, valorAcumulado, estimativaPremio, acumuladoMegaDaVirada);
 
-                        if (sorteio.Any() && sorteio.Count == 19)
-                        {
-                            var concurso = Convert.ToInt32(sorteio[0]);
-                            if (concurso <= ultimoConcurso)
-                                continue;
-                            var dataSorteio = Convert.ToDateTime(sorteio[1]);
-                            var primeiraDezena = Convert.ToInt32(sorteio[2]);
-                            var segundaDezena = Convert.ToInt32(sorteio[3]);
-                            var terceiraDezena = Convert.ToInt32(sorteio[4]);
-                            var quartaDezena = Convert.ToInt32(sorteio[5]);
-                            var quintaDezena = Convert.ToInt32(sorteio[6]);
-                            var sextaDezena = Convert.ToInt32(sorteio[7]);
-                            var arrecadacao = Convert.ToDecimal(sorteio[8]);
-                            var ganhadoresSena = Convert.ToInt32(sorteio[9]);
-                            var rateioSena = Convert.ToDecimal(sorteio[10]);
-                            var ganhadoresQuina = Convert.ToInt32(sorteio[11]);
-                            var rateioQuina = Convert.ToDecimal(sorteio[12]);
-                            var ganhadoresQuadra = Convert.ToInt32(sorteio[13]);
-                            var rateioQuadra = Convert.ToDecimal(sorteio[14]);
-                            var acumulado = sorteio[15].Equals("SIM") ? "SIM" : "NAO";
-                            var valorAcumulado = Convert.ToDecimal(sorteio[16]);
-                            var estimativaPremio = Convert.ToDecimal(sorteio[17]);
-                            var acumuladoMegaDaVirada = Convert.ToDecimal(sorteio[18]);
+                    if (resultadoCef.EhValido())
+                        importacao.Validos.Add(resultadoCef);
 
-                            var resultadoCef = new MegaSenaCEF(
-                                concurso, dataSorteio, primeiraDezena, segundaDezena, terceiraDezena, quartaDezena, quintaDezena, sextaDezena, arrecadacao, ganhadoresSena,
-                                rateioSena, ganhadoresQuina, rateioQuina, ganhadoresQuadra, rateioQuadra, acumulado, valorAcumulado, estimativaPremio, acumuladoMegaDaVirada);
-
-                            if (resultadoCef.EhValido())
-                                resultados.Add(resultadoCef);
-                        }
-                    }
+                    else
+                        importacao.Rejeitados.Add(resultadoCef);
                 }
             }
 
-            return resultados;
+            return importacao;
         }
 
         public MegaSenaViewModel Obter(int concurso)
