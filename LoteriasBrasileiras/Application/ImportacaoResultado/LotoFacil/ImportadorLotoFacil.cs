@@ -1,10 +1,9 @@
 ﻿using System;
 using System.IO;
 using AutoMapper;
-using System.Net;
 using System.Linq;
 using Domain.LotoFacil;
-using System.IO.Compression;
+using Application.Util;
 using Application.ViewModel;
 using Application.Interfaces;
 using System.Collections.Generic;
@@ -32,9 +31,9 @@ namespace Application.ImportacaoResultado.LotoFacil
             var ultimo = _lotoFacilRepository.ObterUltimo();
             int ultimoConcurso = ultimo != null ? ultimo.Concurso : 0;
 
-            BaixarUltimoResultadoCEF();
+            ArquivoHelper.BaixarUltimoResultadoCEF(urlDownload, arquivoZip, pathArquivoZip);
 
-            var pathArquivo = UnzipArquivo();
+            var pathArquivo = ArquivoHelper.UnzipArquivo(pathArquivoZip, arquivoZip, extensaoArquivoHtm);
 
             var jogos = ImportarArquivo(pathArquivo, ultimoConcurso);
 
@@ -47,45 +46,6 @@ namespace Application.ImportacaoResultado.LotoFacil
                 return @"Um jogo foi importado.";
 
             return string.Format("{0} jogos foram importados.", importados);
-        }
-
-        private string UnzipArquivo()
-        {
-            try
-            {
-                ZipFile.ExtractToDirectory(pathArquivoZip + arquivoZip, pathArquivoZip, true);
-
-                var arquivos = Directory.EnumerateFiles(pathArquivoZip, extensaoArquivoHtm, SearchOption.AllDirectories);
-                return arquivos.FirstOrDefault();
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-        }
-
-        private void BaixarUltimoResultadoCEF()
-        {
-            try
-            {
-                var myContainer = new CookieContainer();
-                var request = (HttpWebRequest)WebRequest.Create(urlDownload + arquivoZip);
-                request.MaximumAutomaticRedirections = 1;
-                request.AllowAutoRedirect = true;
-                request.CookieContainer = myContainer;
-                var response = (HttpWebResponse)request.GetResponse();
-                using (var responseStream = response.GetResponseStream())
-                {
-                    using (var fileStream = new FileStream(Path.Combine(pathArquivoZip, arquivoZip), FileMode.Create))
-                    {
-                        responseStream.CopyTo(fileStream);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
         }
 
         public IList<LotoFacilCEF> ImportarArquivo(string pathArquivo, int ultimoConcurso)

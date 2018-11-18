@@ -1,10 +1,9 @@
 ﻿using System;
 using System.IO;
-using System.Net;
 using AutoMapper;
 using System.Linq;
 using Domain.MegaSena;
-using System.IO.Compression;
+using Application.Util;
 using Application.ViewModel;
 using Application.Interfaces;
 using Domain.MegaSena.Repository;
@@ -31,10 +30,10 @@ namespace Application.ImportacaoResultado.MegaSena
         {
             var ultimo = _megaSenaRepository.ObterUltimo();
             int ultimoConcurso = ultimo != null ? ultimo.Concurso : 0;
-
-            BaixarUltimoResultadoCEF();
-
-            var pathArquivo = UnzipArquivo();
+                        
+            ArquivoHelper.BaixarUltimoResultadoCEF(urlDownload, arquivoZip, pathArquivoZip);
+                        
+            var pathArquivo = ArquivoHelper.UnzipArquivo(pathArquivoZip, arquivoZip, extensaoArquivoHtm);
 
             var jogos = ImportarArquivo(pathArquivo, ultimoConcurso);
 
@@ -47,45 +46,6 @@ namespace Application.ImportacaoResultado.MegaSena
                 return @"Um jogo foi importado.";
 
             return string.Format("{0} jogos foram importados.", importados);
-        }
-        //TODO: fazer como serviço
-        private string UnzipArquivo()
-        {
-            try
-            {
-                ZipFile.ExtractToDirectory(pathArquivoZip + arquivoZip, pathArquivoZip, true);
-
-                var arquivos = Directory.EnumerateFiles(pathArquivoZip, extensaoArquivoHtm, SearchOption.AllDirectories);
-                return arquivos.FirstOrDefault();
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-        }
-        //TODO: fazer como serviço
-        private void BaixarUltimoResultadoCEF()
-        {
-            try
-            {
-                var myContainer = new CookieContainer();
-                var request = (HttpWebRequest)WebRequest.Create(urlDownload + arquivoZip);
-                request.MaximumAutomaticRedirections = 1;
-                request.AllowAutoRedirect = true;
-                request.CookieContainer = myContainer;
-                var response = (HttpWebResponse)request.GetResponse();
-                using (var responseStream = response.GetResponseStream())
-                {
-                    using (var fileStream = new FileStream(Path.Combine(pathArquivoZip, arquivoZip), FileMode.Create))
-                    {
-                        responseStream.CopyTo(fileStream);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
         }
 
         public IList<MegaSenaCEF> ImportarArquivo(string pathArquivo, int ultimoConcurso)
