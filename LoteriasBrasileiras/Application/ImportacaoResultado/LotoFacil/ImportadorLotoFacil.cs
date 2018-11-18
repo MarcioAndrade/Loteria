@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using AutoMapper;
+using System.Net;
 using System.Linq;
 using Domain.LotoFacil;
 using System.IO.Compression;
@@ -16,7 +17,9 @@ namespace Application.ImportacaoResultado.LotoFacil
         private readonly IMapper _mapper;
         private readonly ILotoFacilRepository _lotoFacilRepository;
         private readonly string pathArquivoZip = @"E:\Meus documentos\Projetos\Loteria\Resultados\";
-        private readonly string arquivoZip = "D_lotfac.zip";
+        private readonly string arquivoZip = @"D_lotfac.zip";
+        private readonly string extensaoArquivoHtm = @"*.htm";
+        private readonly string urlDownload = @"http://www1.caixa.gov.br/loterias/_arquivos/loterias/";
 
         public ImportadorLotoFacil(IMapper mapper, ILotoFacilRepository lotoFacilRepository)
         {
@@ -24,33 +27,65 @@ namespace Application.ImportacaoResultado.LotoFacil
             _lotoFacilRepository = lotoFacilRepository;
         }
 
-        public int Importar()
+        public string Importar()
         {
             var ultimo = _lotoFacilRepository.ObterUltimo();
             int ultimoConcurso = ultimo != null ? ultimo.Concurso : 0;
 
-            //BaixarUltimoResultadoCEF();
+            BaixarUltimoResultadoCEF();
 
             var pathArquivo = UnzipArquivo();
 
             var jogos = ImportarArquivo(pathArquivo, ultimoConcurso);
-            return GravarSorteios(jogos);
+
+            var importados = GravarSorteios(jogos);
+
+            if (importados == 0)
+                return @"Nenhum jogo foi importado pois a base de dados já estava atualizada.";
+
+            if (importados == 1)
+                return @"Um jogo foi importado.";
+
+            return string.Format("{0} jogos foram importados.", importados);
         }
 
         private string UnzipArquivo()
         {
-            ZipFile.ExtractToDirectory(pathArquivoZip + arquivoZip, pathArquivoZip, true);
+            try
+            {
+                ZipFile.ExtractToDirectory(pathArquivoZip + arquivoZip, pathArquivoZip, true);
 
-            var arquivos = Directory.EnumerateFiles(pathArquivoZip, "*.htm", SearchOption.AllDirectories);
-            return arquivos.FirstOrDefault();
+                var arquivos = Directory.EnumerateFiles(pathArquivoZip, extensaoArquivoHtm, SearchOption.AllDirectories);
+                return arquivos.FirstOrDefault();
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         private void BaixarUltimoResultadoCEF()
         {
-            var urlArquivo = "http://www1.caixa.gov.br/loterias/_arquivos/loterias/D_lotfac.zip";
-
-            System.Net.WebClient client = new System.Net.WebClient();
-            client.DownloadFile(urlArquivo, pathArquivoZip + arquivoZip);
+            try
+            {
+                var myContainer = new CookieContainer();
+                var request = (HttpWebRequest)WebRequest.Create(urlDownload + arquivoZip);
+                request.MaximumAutomaticRedirections = 1;
+                request.AllowAutoRedirect = true;
+                request.CookieContainer = myContainer;
+                var response = (HttpWebResponse)request.GetResponse();
+                using (var responseStream = response.GetResponseStream())
+                {
+                    using (var fileStream = new FileStream(Path.Combine(pathArquivoZip, arquivoZip), FileMode.Create))
+                    {
+                        responseStream.CopyTo(fileStream);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         public IList<LotoFacilCEF> ImportarArquivo(string pathArquivo, int ultimoConcurso)

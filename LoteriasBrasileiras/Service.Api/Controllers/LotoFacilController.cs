@@ -32,7 +32,7 @@ namespace Service.Api.Controllers
 
         // POST: api/LotoFacil
         [HttpPost]
-        public int Post()
+        public string Post()
         {
             return _appService.Importar();
         }
