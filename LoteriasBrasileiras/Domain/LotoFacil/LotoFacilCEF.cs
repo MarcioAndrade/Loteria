@@ -1,4 +1,5 @@
 ﻿using System;
+using FluentValidation;
 
 namespace Domain.LotoFacil
 {
@@ -84,7 +85,153 @@ namespace Domain.LotoFacil
 
         public override bool EhValido()
         {
-            return true;
+            Validar();
+            return ValidationResult.IsValid;
+        }
+
+        private void Validar()
+        {
+            ValidarConcurso();
+            ValidarDataSorteio();
+            ValidarBolas();
+            ValidarArrecadacao();
+            ValidarGanhadores();
+            ValidarAcumulado();
+            ValidarEstimativaPremio();
+            ValidarAcumuladoEspecial();
+
+            ValidationResult = Validate(this);
+        }
+
+        private void ValidarConcurso()
+        {
+            RuleFor(c => Concurso)
+                .InclusiveBetween(1, 10000)
+                .WithMessage("O concurso deve ter um número válido");
+        }
+
+        private void ValidarDataSorteio()
+        {
+            var dataInicial = new DateTime(2003, 09, 29, 0, 0, 0);
+            var dataFinal = dataInicial.AddYears(30);
+            RuleFor(c => DataSorteio)
+                .InclusiveBetween(dataInicial, dataFinal)
+                .WithMessage("A data do concurso deve ser válida");
+        }
+
+        private void ValidarBolas()
+        {
+            RuleFor(c => Bola01)
+                .InclusiveBetween(1, 25)
+                .WithMessage("A bola 01 deve ter um valor entre 1 e 25");
+
+            RuleFor(c => Bola02)
+                .InclusiveBetween(1, 25)
+                .WithMessage("A bola 02 deve ter um valor entre 1 e 25");
+
+            RuleFor(c => Bola03)
+                .InclusiveBetween(1, 25)
+                .WithMessage("A bola 03 deve ter um valor entre 1 e 25");
+
+            RuleFor(c => Bola04)
+                .InclusiveBetween(1, 25)
+                .WithMessage("A bola 04 deve ter um valor entre 1 e 25");
+
+            RuleFor(c => Bola05)
+                .InclusiveBetween(1, 25)
+                .WithMessage("A bola 05 deve ter um valor entre 1 e 25");
+
+            RuleFor(c => Bola06)
+                .InclusiveBetween(1, 25)
+                .WithMessage("A bola 06 deve ter um valor entre 1 e 25");
+
+            RuleFor(c => Bola07)
+                .InclusiveBetween(1, 25)
+                .WithMessage("A bola 07 deve ter um valor entre 1 e 25");
+
+            RuleFor(c => Bola08)
+                .InclusiveBetween(1, 25)
+                .WithMessage("A bola 08 deve ter um valor entre 1 e 25");
+
+            RuleFor(c => Bola09)
+                .InclusiveBetween(1, 25)
+                .WithMessage("A bola 09 deve ter um valor entre 1 e 25");
+
+            RuleFor(c => Bola10)
+                .InclusiveBetween(1, 25)
+                .WithMessage("A bola 10 deve ter um valor entre 1 e 25");
+
+            RuleFor(c => Bola11)
+                .InclusiveBetween(1, 25)
+                .WithMessage("A bola 11 deve ter um valor entre 1 e 25");
+
+            RuleFor(c => Bola12)
+                .InclusiveBetween(1, 25)
+                .WithMessage("A bola 12 deve ter um valor entre 1 e 25");
+
+            RuleFor(c => Bola13)
+                .InclusiveBetween(1, 25)
+                .WithMessage("A bola 13 deve ter um valor entre 1 e 25");
+
+            RuleFor(c => Bola14)
+                .InclusiveBetween(1, 25)
+                .WithMessage("A bola 14 deve ter um valor entre 1 e 25");
+
+            RuleFor(c => Bola15)
+                .InclusiveBetween(1, 25)
+                .WithMessage("A bola 15 deve ter um valor entre 1 e 25");
+
+        }
+
+        private void ValidarArrecadacao()
+        {
+            RuleFor(c => Arrecadacao)
+                .GreaterThanOrEqualTo(0M)
+                .WithMessage("A arrecadação deve ter um valor válido");
+        }
+
+        private void ValidarGanhadores()
+        {
+            RuleFor(c => Ganhadores11)
+                .GreaterThanOrEqualTo(0)
+                .WithMessage("O número de ganhadores de 11 de dezenas deve ser válido");
+
+            RuleFor(c => Ganhadores12)
+                .GreaterThanOrEqualTo(0)
+                .WithMessage("O número de ganhadores de 12 de dezenas deve ser válido");
+
+            RuleFor(c => Ganhadores13)
+                .GreaterThanOrEqualTo(0)
+                .WithMessage("O número de ganhadores de 13 de dezenas deve ser válido");
+
+            RuleFor(c => Ganhadores14)
+                .GreaterThanOrEqualTo(0)
+                .WithMessage("O número de ganhadores de 14 de dezenas deve ser válido");
+
+            RuleFor(c => Ganhadores15)
+                .GreaterThanOrEqualTo(0)
+                .WithMessage("O número de ganhadores de 15 de dezenas deve ser válido");
+        }
+
+        private void ValidarAcumulado()
+        {
+            RuleFor(c => Acumulado)
+                .GreaterThanOrEqualTo(0)
+                .WithMessage("O valor acumulado deve ser válido");
+        }
+
+        private void ValidarEstimativaPremio()
+        {
+            RuleFor(c => EstimativaPremio)
+                .GreaterThanOrEqualTo(0)
+                .WithMessage("O valor da estimativa de prêmio deve ser válido");
+        }
+
+        private void ValidarAcumuladoEspecial()
+        {
+            RuleFor(c => AcumuladoEspecial)
+                .GreaterThanOrEqualTo(0)
+                .WithMessage("O valor acumulado especial deve ser válido");
         }
     }
 }
