@@ -18,7 +18,7 @@ namespace Service.Api.Controllers
 
         // GET: api/MegaSena
         [HttpGet]
-        public IEnumerable<MegaSenaViewModel> Get()
+        public IEnumerable<MegaSenaViewModel> Obter()
         {
             return _appService.ObterTodos();
         }

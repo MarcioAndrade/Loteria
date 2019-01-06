@@ -1,0 +1,15 @@
+1. Instalar Microsoft .NET Core 2.0.5 Windows Server Hosting. Download em https:www.microsoft.com/net/download/windows;
+2. Usar o programa como um proxy reverso. Para isso, no arquivo Program.cs, em BuildWebHost, após ".UseStartup<Startup>()" acrescentar ".UseIISIntegration()";
+3. Criar um arquivo web.config na raiz do projeto:
+	<?xml version="1.0" encoding="utf-8"?>
+	<configuration>
+	  <system.webServer>
+		<handlers>
+		  <add name="aspNetCore" path="*" verb="*" modules="AspNetCoreModule" resourceType="Unspecified"/>
+		</handlers>
+		<aspNetCore processPath="%LAUCHER_PATH%" arguments="%LAUCHER_ARGS%" stdoutLogEnabled="false" stdoutLogFile=".\logs\stdout" />
+	  </system.webServer>
+	</configuration>
+4. Na pasta do projeto gerar a publicação com o comando > dotnet publish -c Release;
+5. Criar um novo site no IIS apontando a pasta física para o caminho físico ..\publish gerado acima;
+6. No Pools de Aplicativos do IIS, double click no site criado acima e em Versão do .NET CLR, selecionar a opção "Sem Código Gerenciado"

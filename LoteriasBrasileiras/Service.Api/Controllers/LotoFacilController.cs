@@ -18,21 +18,21 @@ namespace Service.Api.Controllers
 
         // GET: api/LotoFacil
         [HttpGet]
-        public IList<LotoFacilViewModel> Get()
+        public IList<LotoFacilViewModel> Obter()
         {
             return _appService.ObterTodos();
         }
 
         // GET: api/LotoFacil/5
         [HttpGet("{concurso}", Name = "Get")]
-        public LotoFacilViewModel Get(int concurso)
+        public LotoFacilViewModel Obter(int concurso)
         {
             return _appService.Obter(concurso);
         }
 
         // POST: api/LotoFacil
         [HttpPost]
-        public string Post()
+        public string AtualizarCadastro()
         {
             return _appService.Importar();
         }
